@@ -2,46 +2,36 @@ require 'rails_helper'
 
 RSpec.describe Task, type: :model do
   describe 'validation' do
-    before(:each) do
-      @user = create(:user)
-    end
     it 'is valid with all attributes' do
-      task = Task.new(
-        id: 1,
-        content: "test",
-        title: "title",
-        status: 1,
-        created_at: Time.now,
-        updated_at: Time.now,
-        user_id: 1
-      )
-      #expect(task).to be_valid
+      task = build(:task)
       expect(task).to be_valid
+      expect(task.errors).to be_empty
     end
 
     it 'is invalid without title' do
-      task = Task.new(title: nil)
-      task.valid?
-      expect(task.errors[:title]).to include("can't be blank")
+      task_without_title = build(:task, title: "")
+      expect(task_without_title).to be_invalid
+      expect(task_without_title.errors[:title]).to eq ["can't be blank"]
     end
 
     it 'is invalid without status' do
-      task = Task.new(status: nil)
-      task.valid?
-      expect(task.errors[:status]).to include("can't be blank")
+      task_without_status = build(:task, status: nil)
+      expect(task_without_status).to be_invalid
+      expect(task_without_status.errors[:status]).to eq ["can't be blank"]
     end
 
     it 'is invalid with a duplicate title' do
-      task1 = Task.create(title: "title1", status: 1, user_id: 1)
-      task2 = Task.create(title: "title1", status: 1, user_id: 1)
-      task2.valid?
-      expect(task2.errors[:title]).to include("has already been taken")
+      task = create(:task)
+      task_with_duplicated_title = build(:task, title: task.title)
+      expect(task_with_duplicated_title).to be_invalid
+      expect(task_with_duplicated_title.errors[:title]).to eq ["has already been taken"]
     end
 
     it 'is valid with another title' do
-      task1 = Task.create(title: "title1", status: 1, user_id: 1)
-      task2 = Task.create(title: "title2", status: 1, user_id: 1)
-      expect(task2).to be_valid
+      task = create(:task)
+      task_with_another_title = build(:task, title: "another title")
+      expect(task_with_another_title).to be_valid
+      expect(task_with_another_title.errors[:title]).to be_empty
     end
   end
 end
