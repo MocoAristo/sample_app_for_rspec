@@ -65,5 +65,5 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
   # FactoryBotの利用をON
   config.include FactoryBot::Syntax::Methods
-
+  config.include Login_Support
 end
